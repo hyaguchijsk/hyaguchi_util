@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import os
+import re
+
+def rename(dir):
+    re_before=re.compile(r"parts(\d+)-(\d+)-(\d+)-artcam.ppm")
+
+    files=os.listdir(dir)
+    for fname in files:
+        re_res=re_before.match(fname)
+        str3=re_res.group(3)
+        if not len(str3)==3:
+            num3=int(str3)
+            nstr3="%03d" % num3
+            fname_after="parts"+re_res.group(1)+"-"+re_res.group(2)+"-"
+            fname_after=fname_after+nstr3+"-artcam.ppm"
+            #print fname
+            #print fname_after
+            os.rename(dir+fname,dir+fname_after)
+
+rename("/home/jsk/hanai/share/partsdata/img/")
