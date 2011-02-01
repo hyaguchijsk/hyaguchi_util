@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys,os,getopt,re,time,datetime,locale
+import tweet
 
 def read_history(user,shell,histfile,year=None,month=None,day=None):
     if os.path.exists(histfile):
@@ -69,18 +70,22 @@ def read_history(user,shell,histfile,year=None,month=None,day=None):
 if __name__=="__main__":
     args=sys.argv
 
-    opts,args = getopt.getopt(args[1:],"",["shell","histfile"])
+    opts,args = getopt.getopt(args[1:],"",["shell","histfile","tweet"])
 
     shell_full=os.environ.get("SHELL").split("/")
     shell=shell_full[len(shell_full)-1]
     histfile=os.environ.get("HOME") + "/." + shell + "_history"
+    istweet=False
     for opt,val in opts:
         if opt == "--shell":
             shell=val
-        if opt == "--histfile":
+        elif opt == "--histfile":
             histfile=val
+        elif opt == "--tweet":
+            istweet=True
 
     retstr = read_history(os.environ.get("USER"),shell,histfile)
     if retstr != "":
         print retstr
-            
+        if istweet:
+            tweet.tweetstring(retstr)
