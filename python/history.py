@@ -42,22 +42,29 @@ def read_history(user,shell,histfile,year=None,month=None,day=None):
         com_num=len(com_list)
         if com_num==0:
             print >>sys.stderr, "blank history."
+            return ""
         else:
-            print user + "'s " + shell + " command ranking" + " on " + str(t_year) + "/" + str(t_month) + "/" + str(t_day) + " :",
+            #print user + "'s " + shell + " command ranking" + " on " + str(t_year) + "/" + str(t_month) + "/" + str(t_day) + " :",
+            retstr = user + "'s " + shell + " command ranking" + " on " + str(t_year) + "/" + str(t_month) + "/" + str(t_day) + " : "
             com_num = com_num if com_num<5 else 5
 
             if com_num==1:
                 cc,nn=sorted_com_list[0]
-                print cc + " * " + str(nn)
+                #print cc + " * " + str(nn)
+                retstr = retstr + cc + " * " + str(nn)
             else:
                 sorted_com_list=sorted(com_list.items(), key=lambda x:x[1], reverse=True)
                 for i in range(com_num-1):
                     cc,nn=sorted_com_list[i]
-                    print cc + " * " + str(nn) + ",",
+                    #print cc + " * " + str(nn) + ",",
+                    retstr = retstr + cc + " * " + str(nn) + ", "
                 cc,nn=sorted_com_list[com_num-1]
-                print cc + " * " + str(nn)
+                #print cc + " * " + str(nn)
+                retstr = retstr + cc + " * " + str(nn)
+            return retstr
     else:
         print >>sys.stderr, "file not found: " + histfile
+        return ""
 
 if __name__=="__main__":
     args=sys.argv
@@ -73,5 +80,7 @@ if __name__=="__main__":
         if opt == "--histfile":
             histfile=val
 
-    read_history(os.environ.get("USER"),shell,histfile)
+    retstr = read_history(os.environ.get("USER"),shell,histfile)
+    if retstr != "":
+        print retstr
             
