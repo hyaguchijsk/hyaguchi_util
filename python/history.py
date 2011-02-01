@@ -24,9 +24,12 @@ def read_history(user,shell,histfile,year=None,month=None,day=None):
             if re_res:
                 st_tm=time.localtime(int(re_res.group(1)))
             elif st_tm:
-                com=line.split()[0]
+                line_split=line.split()
+                com=line_split[0]
+                if com=="sudo" and len(line_split)>2:
+                    com=line_split[1]
                 if com.find("/")!=-1:
-                    com="exec"
+                    com="[exec]"
                 if((t_year==st_tm.tm_year) and (t_month==st_tm.tm_mon) and (t_day==st_tm.tm_mday)):
                     if com_list.get(com):
                         com_list[com]=com_list[com]+1;
@@ -36,13 +39,23 @@ def read_history(user,shell,histfile,year=None,month=None,day=None):
             line=f.readline().strip()
         f.close()
 
-        print user + "'s " + shell + " command ranking" + " on " + str(t_year) + "/" + str(t_month) + "/" + str(t_day) + " :",
-        sorted_com_list=sorted(com_list.items(), key=lambda x:x[1], reverse=True)
-        for i in range(4):
-            cc,nn=sorted_com_list[i]
-            print cc + " * " + str(nn) + ",",
-        cc,nn=sorted_com_list[4]
-        print cc + " * " + str(nn)
+        com_num=len(com_list)
+        if com_num==0:
+            print >>sys.stderr, "blank history."
+        else:
+            print user + "'s " + shell + " command ranking" + " on " + str(t_year) + "/" + str(t_month) + "/" + str(t_day) + " :",
+            com_num = com_num if com_num<5 else 5
+
+            if com_num==1:
+                cc,nn=sorted_com_list[0]
+                print cc + " * " + str(nn)
+            else:
+                sorted_com_list=sorted(com_list.items(), key=lambda x:x[1], reverse=True)
+                for i in range(com_num-1):
+                    cc,nn=sorted_com_list[i]
+                    print cc + " * " + str(nn) + ",",
+                cc,nn=sorted_com_list[com_num-1]
+                print cc + " * " + str(nn)
     else:
         print >>sys.stderr, "file not found: " + histfile
 
